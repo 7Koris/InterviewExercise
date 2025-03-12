@@ -15,7 +15,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag interview-image:$(date +%s)
+      run: docker build . --file Dockerfile --tag interview-image:latest
     - name: Spin up container
       run: docker run -d --name interview-container -p 80:80 interview-image:latest
     - name: run tests
