@@ -19,5 +19,4 @@ jobs:
     - name: Spin up container
       run: docker run -d --name interview-container -p 80:80 interview-image:latest
     - name: run tests
-      uses: liatrio/github-actions/apprentice-action@master
-      continue-on-error: true
+      uses: liatrio/github-actions/apprentice-action@v1.0.0
