@@ -7,16 +7,44 @@ on:
     branches: [ "main" ]
 
 jobs:
-
   build:
-
     runs-on: ubuntu-latest
-
+    environment: liatrio
+    permissions:
+      packages: write
+      contents: read
+      attestations: write
+      id-token: write
     steps:
     - uses: actions/checkout@v4
+
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag interview-image:latest
+      run: docker build . --file Dockerfile --tag 7koris/interview-image
+
     - name: Spin up container
-      run: docker run -d --name interview-container -p 80:80 interview-image:latest
+      run: docker run -d --name interview-container -p 80:80 7koris/interview-image
+
     - name: run tests
       uses: liatrio/github-actions/apprentice-action@v1.0.0
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Extract metadata (tags, labels) for Docker
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: 7koris/interview-image
+
+    - name: Build and push Docker image
+      id: push
+      uses: docker/build-push-action@v6
+      with:
+        context: .
+        file: ./Dockerfile
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
